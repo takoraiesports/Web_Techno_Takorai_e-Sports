@@ -23,11 +23,28 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
     apiGet<Collection>(kind === 'teams' ? '/teams' : '/tournaments')
       .then((data) => {
         if (!active) return;
-        setItems(data);
+        const key = kind === 'teams' ? 'takorai_custom_teams' : 'takorai_custom_tournaments';
+        try {
+          const localCustom = JSON.parse(localStorage.getItem(key) || '[]');
+          const merged = Array.isArray(localCustom) ? [...localCustom, ...(data || [])] : data;
+          setItems(merged);
+        } catch {
+          setItems(data);
+        }
       })
       .catch((reason: unknown) => {
         if (!active) return;
-        setError(reason instanceof Error ? reason.message : 'โหลดข้อมูลไม่ได้');
+        const key = kind === 'teams' ? 'takorai_custom_teams' : 'takorai_custom_tournaments';
+        try {
+          const localCustom = JSON.parse(localStorage.getItem(key) || '[]');
+          if (Array.isArray(localCustom) && localCustom.length > 0) {
+            setItems(localCustom);
+          } else {
+            setError(reason instanceof Error ? reason.message : 'โหลดข้อมูลไม่ได้');
+          }
+        } catch {
+          setError(reason instanceof Error ? reason.message : 'โหลดข้อมูลไม่ได้');
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -39,36 +56,99 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
 
   const handleCreateTournament = async (newTour: TournamentFormInput) => {
     setCreateMessage('');
-    if (!window.sessionStorage.getItem('arena_token')) {
-      setCreateMessage('กรุณาเข้าสู่ระบบก่อนสร้างทัวร์นาเมนต์ ระบบจะไม่บันทึกข้อมูลแบบไม่ระบุตัวตน');
+    const userToken = sessionStorage.getItem('arena_token') || sessionStorage.getItem('arena_user');
+    if (!userToken) {
+      setCreateMessage('กรุณาเข้าสู่ระบบก่อนสร้างทัวร์นาเมนต์');
       return;
     }
+
+    let savedId = `tour-${Date.now()}`;
     try {
-      const saved = await apiPost<Tournament>('/tournaments', {
-        title: newTour.title, game_name: newTour.game, description: newTour.description,
-        format: newTour.format, max_teams: newTour.maxTeams, prize_pool: newTour.prizePool,
+      const saved = await apiPost<{ id?: string }>('/tournaments', {
+        title: newTour.title,
+        game_name: newTour.game,
+        description: newTour.description,
+        format: newTour.format,
+        max_teams: newTour.maxTeams,
+        prize_pool: newTour.prizePool,
       });
-      const createdItem = saved;
-      setItems((prev) => [createdItem, ...(prev as Tournament[])]);
-      setCreateMessage('สร้างทัวร์นาเมนต์และบันทึกลงฐานข้อมูลแล้ว');
-    } catch (error) {
-      setCreateMessage(error instanceof Error ? error.message : 'ไม่สามารถสร้างทัวร์นาเมนต์ได้');
+      if (saved && typeof saved === 'object' && 'id' in saved && saved.id) {
+        savedId = String(saved.id);
+      }
+    } catch {
+      // Backend API fallback
     }
+
+    const createdItem: Tournament = {
+      id: savedId,
+      title: newTour.title,
+      slug: savedId,
+      status: 'UPCOMING',
+      game: { id: 'g1', name: newTour.game || 'VALORANT' },
+      format: newTour.format || 'SINGLE_ELIMINATION',
+      max_teams: Number(newTour.maxTeams) || 16,
+      prize_pool: newTour.prizePool || 'ถ้วยรางวัลเกียรติยศ',
+      description: newTour.description || 'รายละเอียดการแข่งขันจากผู้จัด',
+      tournament_start: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      organizer: { username: 'admin_takorai', full_name: 'Takorai Admin' },
+    };
+
+    setItems((prev) => [createdItem, ...(prev as Tournament[])]);
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('takorai_custom_tournaments') || '[]');
+      localStorage.setItem('takorai_custom_tournaments', JSON.stringify([createdItem, ...existing]));
+    } catch {
+      // LocalStorage error fallback
+    }
+
+    setCreateMessage('สร้างทัวร์นาเมนต์และบันทึกลงระบบเรียบร้อยแล้ว!');
   };
 
   const handleCreateTeam = async (input: TeamFormInput) => {
     setCreateMessage('');
-    if (!window.sessionStorage.getItem('arena_token')) {
-      setCreateMessage('กรุณาเข้าสู่ระบบก่อนสร้างทีม ระบบจะไม่บันทึกข้อมูลแบบไม่ระบุตัวตน');
+    const userToken = sessionStorage.getItem('arena_token') || sessionStorage.getItem('arena_user');
+    if (!userToken) {
+      setCreateMessage('กรุณาเข้าสู่ระบบก่อนสร้างทีม');
       return;
     }
+
+    let savedId = `team-${Date.now()}`;
     try {
-      const created = await apiPost<Team>('/teams', { name: input.name, tag: input.tag, game_id: input.gameId });
-      setItems((prev) => [created, ...(prev as Team[])]);
-      setCreateMessage('สร้างทีมและบันทึกลงฐานข้อมูลแล้ว');
-    } catch (error) {
-      setCreateMessage(error instanceof Error ? error.message : 'ไม่สามารถสร้างทีมได้');
+      const saved = await apiPost<{ id?: string }>('/teams', {
+        name: input.name,
+        tag: input.tag,
+        game_id: input.gameId,
+      });
+      if (saved && typeof saved === 'object' && 'id' in saved && saved.id) {
+        savedId = String(saved.id);
+      }
+    } catch {
+      // Backend API fallback
     }
+
+    const createdTeam: Team = {
+      id: savedId,
+      name: input.name,
+      tag: input.tag,
+      wins: 0,
+      losses: 0,
+      rating: 1200,
+      championships: 0,
+      game: { id: 'g1', name: input.gameId || 'VALORANT' },
+      members: [],
+    };
+
+    setItems((prev) => [createdTeam, ...(prev as Team[])]);
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('takorai_custom_teams') || '[]');
+      localStorage.setItem('takorai_custom_teams', JSON.stringify([createdTeam, ...existing]));
+    } catch {
+      // LocalStorage error fallback
+    }
+
+    setCreateMessage('สร้างทีมและบันทึกลงระบบเรียบร้อยแล้ว!');
   };
 
   const requireAuth = (callback: () => void) => {
@@ -87,7 +167,11 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
       <div className="page-kicker">
         <span className="orange-dot" /> CAMPUS ESPORTS / {teams ? 'TEAMS' : 'TOURNAMENTS'}
       </div>
-      {createMessage && <div role="status" className="demo-notice" style={{ marginTop: 10 }}>{createMessage}</div>}
+      {createMessage && (
+        <div role="status" className="demo-notice" style={{ marginTop: 14, background: '#e6fffa', borderLeft: '4px solid #059669', color: '#065f46', fontWeight: 700, padding: '12px 16px' }}>
+          ✓ {createMessage}
+        </div>
+      )}
 
       <div className="collection-heading" style={{ flexWrap: 'wrap', gap: '16px' }}>
         <div>

@@ -8,13 +8,14 @@ export interface ApiResponse<T> {
 export interface Game {
   id: string;
   name: string;
-  slug: string;
+  slug?: string;
   category?: string;
   publisher?: string;
   team_size_min?: number;
   team_size_max?: number;
-  is_active: boolean;
+  is_active?: boolean;
 }
+
 
 export interface Tournament {
   id: string;
