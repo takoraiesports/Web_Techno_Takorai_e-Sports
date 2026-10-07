@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Role } from '@esports/shared';
+
+export const Role = {
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER',
+} as const;
 
 type SessionUser = { username?: string; full_name?: string; roles?: { name: string }[] };
 
