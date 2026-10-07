@@ -29,3 +29,27 @@ func TestValidateProductionJWTSecret(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateProductionFrontendAllowlist(t *testing.T) {
+	base := Config{
+		Env: "production", JWTSecret: "01234567890123456789012345678901", JWTExpirationHours: 12,
+		DBPassword: "db-secret-never-used-742901", RedisPassword: "redis-secret-never-used-742901",
+		S3AccessKey: "object-access-key", S3SecretKey: "object-secret-never-used-742901",
+		FrontendURL: "https://club.example.edu",
+	}
+	if err := base.Validate(); err != nil {
+		t.Fatalf("valid primary origin rejected: %v", err)
+	}
+	base.FrontendURLs = "https://ttes-club.vercel.app, https://club-preview.vercel.app/"
+	if err := base.Validate(); err != nil {
+		t.Fatalf("valid additional origins rejected: %v", err)
+	}
+	base.FrontendURLs = "https://evil.example/path"
+	if err := base.Validate(); err == nil {
+		t.Fatal("expected a frontend path to be rejected as an origin")
+	}
+	base.FrontendURLs = "http://ttes-club.vercel.app"
+	if err := base.Validate(); err == nil {
+		t.Fatal("expected insecure production origin to be rejected")
+	}
+}

@@ -1,55 +1,55 @@
-# 🚀 คู่มือการ Deploy Web Techno Takorai e-Sports (Vercel + Supabase + Cloudinary)
+# คู่มือ Deploy Techno Takorai E-Sports Club
 
-ระบบได้รับการออกแบบให้รองรับการแยกส่วนบริการ (Cloud Services) ดังนี้:
+เว็บไซต์แบ่งเป็น Next.js frontend และ Go API แยกกัน หน้าเว็บที่ Vercel ต้องเรียก Go API ที่เปิดผ่าน HTTPS ได้ ห้ามใช้ `localhost` เป็น API URL ใน production
 
----
+## ตั้งค่า Frontend บน Vercel
 
-## 1. 🗄️ 1. ฝากฐานข้อมูลไว้กับ Supabase (PostgreSQL)
+ตั้ง Environment Variable ใน Vercel Project:
 
-### ขั้นตอนการตั้งค่า:
-1. สมัคร/เข้าสู่ระบบ [Supabase.com](https://supabase.com) แล้วสร้าง **New Project**
-2. ไปที่ **Project Settings** -> **Database** แล้วคัดลอก **Connection String** (URI Mode หรือ Transaction Pooler):
-   ```env
-   DATABASE_URL="postgres://postgres.[YOUR-PROJECT-REF]:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
-   ```
-3. นำ SQL Schema สคริปต์ไปรันใน **SQL Editor** ของ Supabase เพื่อสร้างตารางทั้งหมด (Users, Tournaments, Teams, Products, News, Orders, MatchBrackets)
-
----
-
-## 2. 🖼️ 2. ฝากรูปภาพไว้กับ Cloudinary (Image Storage)
-
-### ขั้นตอนการตั้งค่า:
-1. สมัคร/เข้าสู่ระบบ [Cloudinary.com](https://cloudinary.com)
-2. ไปที่ **Dashboard** คัดลอกค่า:
-   - `Cloud Name`
-   - `API Key`
-   - `API Secret`
-3. ไปที่ **Settings** -> **Upload** -> **Upload presets** -> เพิ่ม Preset ใหม่
-   - ตั้งชื่อ Preset เช่น `takorai_uploads`
-   - กำหนด Mode เป็น `Unsigned` (เพื่อให้ Frontend อัปโหลดรูปภาพได้สะดวก)
-
-### Environment Variables ที่ต้องตั้งค่าใน Next.js:
 ```env
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloud-name"
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="takorai_uploads"
-CLOUDINARY_API_KEY="your-api-key"
-CLOUDINARY_API_SECRET="your-api-secret"
+NEXT_PUBLIC_API_URL=https://<โดเมน-public-ของ-go-api>
 ```
 
----
+ใส่เฉพาะ origin ของ API เช่น `https://api.example.org` ไม่ต้องต่อ `/api/v1` จากนั้น Redeploy frontend เพราะ Next.js ฝังค่านี้ตอน Build
 
-## 3. 🌐 3. Deploy บน Vercel (Frontend & Next.js App)
+## ตั้งค่า Backend
 
-### ขั้นตอนการเชื่อมต่อ GitHub กับ Vercel:
-1. ไปที่ [Vercel.com](https://vercel.com) แล้วกด **Add New...** -> **Project**
-2. เลือก Import Repository `takoraiesports/Web_Techno_Takorai_e-Sports`
-3. ตั้งค่า **Project Configuration**:
-   - **Framework Preset**: `Next.js`
-   - **Root Directory**: `apps/frontend`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `.next`
-4. ตั้งค่า **Environment Variables** บน Vercel Dashboard:
-   - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` = `your-cloud-name`
-   - `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` = `takorai_uploads`
-   - `DATABASE_URL` = `postgres://...`
-5. กด **Deploy** 🚀
+ตั้ง Environment Variables ในเครื่องหรือบริการที่รัน Go API:
+
+```env
+ENV=production
+FRONTEND_URL=https://ttes-club.vercel.app
+FRONTEND_URLS=https://ttes-club.vercel.app
+DB_HOST=<postgres-host>
+DB_PORT=<postgres-port>
+DB_USER=<postgres-user>
+DB_PASSWORD=<secret>
+DB_NAME=<database-name>
+DB_SSLMODE=require
+REDIS_HOST=<redis-host>
+REDIS_PORT=<redis-port>
+REDIS_PASSWORD=<secret>
+JWT_SECRET=<random-secret-at-least-32-characters>
+S3_ENDPOINT=<s3-or-minio-endpoint>
+S3_REGION=<region>
+S3_ACCESS_KEY=<access-key>
+S3_SECRET_KEY=<secret-key>
+S3_BUCKET_NAME=<bucket-name>
+```
+
+`FRONTEND_URLS` รับหลาย origin โดยคั่นด้วย comma และอนุญาตเฉพาะ HTTPS origins ที่ระบุเท่านั้น เพิ่มโดเมน production/preview ที่ต้องการให้เรียก API อย่างชัดเจน
+
+PostgreSQL ใช้ Supabase ได้ โดยตั้งค่าการเชื่อมต่อแยกเป็น `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` และ `DB_SSLMODE` ตามหน้า Database Settings ของ Supabase ตัว Go API จะสร้าง/ปรับ schema และเติมแคตตาล็อกเกมเมื่อเริ่มทำงาน ไม่ต้องนำ `DATABASE_URL` ไปใส่ใน frontend
+
+Redis และ S3-compatible storage เป็น dependencies ของ backend ใน production ใช้ Compose profile ตาม `docker/docker-compose.production.yml` หรือบริการ managed ที่ตั้งค่า network และ credentials ให้ backend เข้าถึงได้
+
+## ตรวจหลัง Deploy
+
+1. เปิด `https://<โดเมน-api>/health` ต้องได้สถานะพร้อมใช้งาน
+2. เรียก `https://<โดเมน-api>/api/v1/games` ต้องได้ข้อมูลเกม
+3. เปิดหน้าร้านและหน้าสร้างทัวร์นาเมนต์จากโดเมน Vercel ตรวจว่าไม่มี request ไป `localhost` และไม่มี CORS error
+4. ถ้ายังเชื่อมต่อไม่ได้ ตรวจค่า `NEXT_PUBLIC_API_URL` ที่ Vercel, origin ใน `FRONTEND_URLS` ของ backend และ Redeploy frontend หลังเปลี่ยน environment variables
+
+## Cloudinary
+
+Cloudinary unsigned upload ใช้ Cloud Name และ Upload Preset ที่อนุญาตให้ใช้จาก client ได้เท่านั้น ห้ามฝัง API Secret หรือ credentials ฝั่ง server ลงใน `NEXT_PUBLIC_*` หรือไฟล์ตัวอย่างที่ commit เข้า repository

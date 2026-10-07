@@ -51,6 +51,7 @@ services:
       PORT: 8080
       ENV: production
       FRONTEND_URL: https://${DOMAIN:?Set DOMAIN to the public website domain}
+      FRONTEND_URLS: ${FRONTEND_URLS:-}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: ${POSTGRES_USER:?Set POSTGRES_USER}

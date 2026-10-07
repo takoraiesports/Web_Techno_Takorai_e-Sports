@@ -29,7 +29,7 @@ func SetupRouter(
 	r := gin.Default()
 
 	// CORS Middleware
-	r.Use(middleware.CORSMiddleware(cfg.FrontendURL))
+	r.Use(middleware.CORSMiddleware(cfg.FrontendURL + "," + cfg.FrontendURLs))
 
 	// Handlers
 	authHandler := NewAuthHandler(authService)

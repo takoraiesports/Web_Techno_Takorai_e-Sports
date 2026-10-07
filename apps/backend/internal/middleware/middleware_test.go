@@ -42,3 +42,31 @@ func TestRequireAnyRole(t *testing.T) {
 		})
 	}
 }
+
+func TestCORSAllowlist(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.Use(CORSMiddleware("http://localhost:3000,https://ttes-club.vercel.app"))
+	r.OPTIONS("/api/v1/games", func(c *gin.Context) { c.Status(http.StatusNoContent) })
+	for _, test := range []struct {
+		origin string
+		want   string
+	}{
+		{"https://ttes-club.vercel.app", "https://ttes-club.vercel.app"},
+		{"http://localhost:3000", "http://localhost:3000"},
+		{"https://untrusted.example", ""},
+	} {
+		t.Run(test.origin, func(t *testing.T) {
+			request := httptest.NewRequest(http.MethodOptions, "/api/v1/games", nil)
+			request.Header.Set("Origin", test.origin)
+			response := httptest.NewRecorder()
+			r.ServeHTTP(response, request)
+			if got := response.Header().Get("Access-Control-Allow-Origin"); got != test.want {
+				t.Fatalf("allow origin = %q, want %q", got, test.want)
+			}
+			if response.Code != http.StatusNoContent {
+				t.Fatalf("preflight status = %d, want 204", response.Code)
+			}
+		})
+	}
+}

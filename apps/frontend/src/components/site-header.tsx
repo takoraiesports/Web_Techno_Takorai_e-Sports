@@ -193,7 +193,12 @@ export function SiteHeader() {
                     className="button button-orange"
                     style={{ width: '100%' }}
                     onClick={() => {
+                      const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
                       setCartOpen(false);
+                      if (!user) {
+                        window.location.assign('/login?mode=login&notice=require_auth_cart');
+                        return;
+                      }
                       setCheckoutOpen(true);
                     }}
                   >

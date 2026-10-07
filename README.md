@@ -75,6 +75,19 @@ The site runs at `http://localhost:3000`. To use a different backend URL, copy
 `apps/frontend/.env.example` to `apps/frontend/.env.local` and edit
 `NEXT_PUBLIC_API_URL`. The default backend address is `http://localhost:8080`.
 
+### Vercel frontend + separately hosted Go API
+
+For the existing Vercel site, set `NEXT_PUBLIC_API_URL` in the Vercel project to the public
+HTTPS base URL of the deployed Go backend (for example `https://api.your-domain.example`, with
+no `/api/v1` suffix), then redeploy the frontend. On the backend, set `FRONTEND_URLS` to the
+exact frontend origin `https://ttes-club.vercel.app` (and any other production domains that
+should be allowed). Keep `FRONTEND_URL` set to its primary HTTPS origin. The frontend will no
+longer silently send production traffic to `localhost` when the API URL is missing.
+
+On backend startup, the database adds the competitive game catalog when a slug is not already
+present. It includes the official Esports Nations Cup 2026 title lineup and additional established
+regional esports titles. Existing team, tournament, result, and store records are not generated.
+
 The frontend uses a minimal white, orange, and black theme. Products come from the backend
 database; the catalog starts empty so an administrator can add verified items, prices, variants,
 images, and stock after deployment. Orders and payments are intentionally unavailable until a

@@ -105,14 +105,36 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {!teams && (
             <button
-              onClick={() => setCreateModalOpen(true)}
+              onClick={() => {
+                const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
+                if (!user) {
+                  window.location.assign('/login?mode=login&notice=require_auth_tournament');
+                  return;
+                }
+                setCreateModalOpen(true);
+              }}
               className="button button-orange"
               style={{ padding: '0 20px', minHeight: '46px', fontSize: '12px', fontWeight: 800 }}
             >
               + สร้างทัวร์นาเมนต์ใหม่
             </button>
           )}
-          {teams && <button onClick={() => setCreateTeamModalOpen(true)} className="button button-orange" style={{ padding: '0 20px', minHeight: '46px', fontSize: '12px', fontWeight: 800 }}>+ สร้างทีม</button>}
+          {teams && (
+            <button
+              onClick={() => {
+                const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
+                if (!user) {
+                  window.location.assign('/login?mode=login&notice=require_auth_tournament');
+                  return;
+                }
+                setCreateTeamModalOpen(true);
+              }}
+              className="button button-orange"
+              style={{ padding: '0 20px', minHeight: '46px', fontSize: '12px', fontWeight: 800 }}
+            >
+              + สร้างทีม
+            </button>
+          )}
 
           <div className="heading-stamp">
             <Icon name={teams ? 'users' : 'trophy'} />

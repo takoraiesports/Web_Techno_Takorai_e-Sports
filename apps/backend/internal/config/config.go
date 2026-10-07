@@ -12,9 +12,10 @@ import (
 )
 
 type Config struct {
-	Port        string
-	Env         string
-	FrontendURL string
+	Port         string
+	Env          string
+	FrontendURL  string
+	FrontendURLs string
 
 	// DB
 	DBHost     string
@@ -59,6 +60,7 @@ func LoadConfig() (*Config, error) {
 		Port:                 getEnv("PORT", "8080"),
 		Env:                  getEnv("ENV", "development"),
 		FrontendURL:          getEnv("FRONTEND_URL", "http://localhost:3000"),
+		FrontendURLs:         getEnv("FRONTEND_URLS", ""),
 		DBHost:               getEnv("DB_HOST", "localhost"),
 		DBPort:               getEnv("DB_PORT", "5432"),
 		DBUser:               getEnv("DB_USER", "esports_user"),
@@ -108,6 +110,16 @@ func (c *Config) Validate() error {
 		frontend, err := url.ParseRequestURI(c.FrontendURL)
 		if err != nil || frontend.Scheme != "https" || frontend.Host == "" {
 			return errors.New("FRONTEND_URL must be an HTTPS origin in production")
+		}
+		for _, origin := range strings.Split(c.FrontendURLs, ",") {
+			origin = strings.TrimSpace(origin)
+			if origin == "" {
+				continue
+			}
+			parsed, err := url.ParseRequestURI(origin)
+			if err != nil || parsed.Scheme != "https" || parsed.Host == "" || (parsed.Path != "" && parsed.Path != "/") || parsed.RawQuery != "" || parsed.Fragment != "" {
+				return errors.New("every FRONTEND_URLS entry must be an HTTPS origin")
+			}
 		}
 	}
 	return nil

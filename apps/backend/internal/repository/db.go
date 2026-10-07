@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -65,16 +66,20 @@ func NewPostgresDB(cfg *config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	seedGames := []domain.Game{
-		{Name: "Valorant", Slug: "valorant", Publisher: "Riot Games", Category: "FPS", Platform: "PC", TeamSizeMin: 5, TeamSizeMax: 7, IsActive: true},
-		{Name: "ROV / Arena of Valor", Slug: "rov", Publisher: "Garena", Category: "MOBA", Platform: "MOBILE", TeamSizeMin: 5, TeamSizeMax: 7, IsActive: true},
-		{Name: "League of Legends", Slug: "league-of-legends", Publisher: "Riot Games", Category: "MOBA", Platform: "PC", TeamSizeMin: 5, TeamSizeMax: 7, IsActive: true},
-		{Name: "FC Online", Slug: "fc-online", Publisher: "EA Sports", Category: "SPORTS", Platform: "PC", TeamSizeMin: 1, TeamSizeMax: 1, IsActive: true},
-		{Name: "PUBG Mobile", Slug: "pubg-mobile", Publisher: "KRAFTON", Category: "BATTLE_ROYALE", Platform: "MOBILE", TeamSizeMin: 4, TeamSizeMax: 4, IsActive: true},
-		{Name: "Dota 2", Slug: "dota-2", Publisher: "Valve", Category: "MOBA", Platform: "PC", TeamSizeMin: 5, TeamSizeMax: 7, IsActive: true},
+	// Rename only the original built-in labels; preserve any names changed by admins.
+	legacyNames := map[string][2]string{
+		"rov":         {"ROV / Arena of Valor", "Arena of Valor (RoV)"},
+		"valorant":    {"Valorant", "VALORANT"},
+		"pubg-mobile": {"PUBG Mobile", "PUBG MOBILE"},
 	}
-	if err := db.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "slug"}}, DoNothing: true}).Create(&seedGames).Error; err != nil {
-		log.Printf("[Database] Game catalog seed warning: %v\n", err)
+	for slug, names := range legacyNames {
+		if err := db.Model(&domain.Game{}).Where("slug = ? AND name = ?", slug, names[0]).Update("name", names[1]).Error; err != nil {
+			return nil, fmt.Errorf("update built-in game label %s: %w", slug, err)
+		}
+	}
+	gameCatalog := competitiveGames()
+	if err := db.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "slug"}}, DoNothing: true}).Create(&gameCatalog).Error; err != nil {
+		return nil, fmt.Errorf("initialize esports game catalog: %w", err)
 	}
 
 	log.Println("[Database] Auto-migration completed")

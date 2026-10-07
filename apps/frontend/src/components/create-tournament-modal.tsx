@@ -39,7 +39,12 @@ export function CreateTournamentModal({
       setGames(items);
       setGame((current) => current || items[0]?.name || '');
       setGamesError(items.length ? '' : 'ยังไม่มีเกมที่เปิดใช้งาน');
-    }).catch((reason: unknown) => { if (active) setGamesError(reason instanceof Error ? reason.message : 'โหลดเกมไม่ได้'); });
+    }).catch((reason: unknown) => {
+      if (!active) return;
+      setGamesError(reason instanceof TypeError
+        ? 'เชื่อมต่อ API ไม่ได้ ตรวจ NEXT_PUBLIC_API_URL และตั้ง CORS ที่ Backend ให้ตรงกับโดเมนเว็บไซต์'
+        : reason instanceof Error ? reason.message : 'โหลดเกมไม่ได้');
+    });
     return () => { active = false; };
   }, [open]);
 

@@ -17,7 +17,16 @@ export default function LoginPage() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    setRegister(new URLSearchParams(window.location.search).get('mode') === 'register');
+    const params = new URLSearchParams(window.location.search);
+    setRegister(params.get('mode') === 'register');
+    const notice = params.get('notice');
+    if (notice === 'require_auth_cart') {
+      setMessage('🔒 กรุณาเข้าสู่ระบบก่อนทำการสั่งซื้อสินค้า');
+    } else if (notice === 'require_auth_tournament') {
+      setMessage('🔒 กรุณาเข้าสู่ระบบก่อนสร้าง หรือ สมัครเข้าร่วมการแข่งขัน');
+    } else if (notice === 'require_auth') {
+      setMessage('🔒 กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ');
+    }
   }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {

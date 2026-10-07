@@ -23,6 +23,11 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
 
   function add() {
     if (outOfStock || needsSize || maxed) return;
+    const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
+    if (!user) {
+      window.location.assign('/login?mode=login&notice=require_auth_cart');
+      return;
+    }
     addToCart(product, selectedSize || undefined);
     setCartOpen(true);
   }
