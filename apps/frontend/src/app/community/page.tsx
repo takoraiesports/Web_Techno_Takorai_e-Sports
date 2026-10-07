@@ -6,6 +6,8 @@ import { Icon } from '@/components/icons';
 import { TournamentCard } from '@/components/tournament-card';
 import { apiGet, type Game, type Team, type Tournament } from '@/lib/api';
 
+import { NewsSlider } from '@/components/news-slider';
+
 export default function HomePage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [games, setGames] = useState<Game[]>([]);
@@ -43,14 +45,7 @@ export default function HomePage() {
           <div className="hero-actions"><Link href="/tournaments" className="button button-orange">สำรวจการแข่งขัน <Icon name="arrow" /></Link><Link href="/teams" className="text-link">รู้จักคอมมูนิตี้ <span>↗</span></Link></div>
           <div className="hero-social-proof"><span><strong>ข้อมูลจากระบบกลาง</strong><small>รายการจริงที่ผู้ดูแลเพิ่มไว้</small></span></div>
         </div>
-        <div className="hero-art" aria-label="กราฟิกชมรม Techno Takorai">
-          <div className="hero-art-grid" />
-          <div className="hero-art-circle circle-one" /><div className="hero-art-circle circle-two" />
-          <div className="art-index">TECHNO / TAKORAI</div><div className="art-vertical">E-SPORTS CLUB</div>
-          <div className="art-monogram">T<span>.</span></div>
-          <div className="art-crosshair">+</div><div className="art-note"><span>EST.</span><strong>PLAY<br />TOGETHER</strong></div>
-          <div className="art-bottom"><span>TECHNO TAKORAI<br />E-SPORTS CLUB</span><span className="art-line" /><span>TH</span></div>
-        </div>
+        <NewsSlider />
       </section>
 
       <section className="stats-band page-shell" aria-label="ภาพรวมคอมมูนิตี้">
