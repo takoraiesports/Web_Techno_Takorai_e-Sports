@@ -85,15 +85,6 @@ INSERT INTO roles (id, name, description) VALUES
 (2, 'MEMBER', 'Standard Club Member and Player')
 ON CONFLICT (id) DO NOTHING;
 
--- Seed Admin Account (takoraiesports@gmail.com / takoraiesportscs18)
-INSERT INTO users (id, email, password_hash, username, full_name, is_verified) VALUES
-('c0000000-0000-0000-0000-000000000001', 'takoraiesports@gmail.com', '$2a$10$0d2dd1f8c446a20dadaa819634f2d9f1e1305dce10d17c92f4c19569d9df1de3', 'admin_takorai', 'Takorai Admin', TRUE)
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO user_roles (user_id, role_id) VALUES
-('c0000000-0000-0000-0000-000000000001', 1)
-ON CONFLICT DO NOTHING;
-
 -- 4. Games
 CREATE TABLE IF NOT EXISTS games (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

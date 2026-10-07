@@ -20,7 +20,10 @@ export function SiteHeader() {
   const { cart, itemCount, cartOpen, setCartOpen, changeQuantity } = useStore();
 
   useEffect(() => {
-    setSignedIn(Boolean(sessionStorage.getItem('arena_token')));
+    const updateSession = () => setSignedIn(Boolean(sessionStorage.getItem('arena_token')));
+    updateSession();
+    window.addEventListener('arena-session-changed', updateSession);
+    return () => window.removeEventListener('arena-session-changed', updateSession);
   }, []);
 
   return (

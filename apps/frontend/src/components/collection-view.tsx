@@ -71,6 +71,15 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
     }
   };
 
+  const requireAuth = (callback: () => void) => {
+    const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
+    if (!user) {
+      window.location.assign('/login?mode=login&notice=require_auth_tournament');
+      return;
+    }
+    callback();
+  };
+
   const teams = kind === 'teams';
 
   return (
@@ -105,14 +114,7 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {!teams && (
             <button
-              onClick={() => {
-                const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
-                if (!user) {
-                  window.location.assign('/login?mode=login&notice=require_auth_tournament');
-                  return;
-                }
-                setCreateModalOpen(true);
-              }}
+              onClick={() => requireAuth(() => setCreateModalOpen(true))}
               className="button button-orange"
               style={{ padding: '0 20px', minHeight: '46px', fontSize: '12px', fontWeight: 800 }}
             >
@@ -121,14 +123,7 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
           )}
           {teams && (
             <button
-              onClick={() => {
-                const user = sessionStorage.getItem('arena_user') || sessionStorage.getItem('arena_token');
-                if (!user) {
-                  window.location.assign('/login?mode=login&notice=require_auth_tournament');
-                  return;
-                }
-                setCreateTeamModalOpen(true);
-              }}
+              onClick={() => requireAuth(() => setCreateTeamModalOpen(true))}
               className="button button-orange"
               style={{ padding: '0 20px', minHeight: '46px', fontSize: '12px', fontWeight: 800 }}
             >
@@ -190,7 +185,7 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
             </span>
             <h2>ทีมใหม่เริ่มต้นที่คุณ</h2>
             <p>เข้าสู่ระบบเพื่อสร้างทีมใหม่และเริ่มจัด roster</p>
-            <button onClick={() => setCreateTeamModalOpen(true)} className="button button-orange">+ สร้างทีม <Icon name="arrow" /></button>
+            <button onClick={() => requireAuth(() => setCreateTeamModalOpen(true))} className="button button-orange">+ สร้างทีม <Icon name="arrow" /></button>
           </div>
         )
       ) : items.length ? (
@@ -206,7 +201,7 @@ export function CollectionView({ kind }: { kind: 'tournaments' | 'teams' }) {
           </span>
           <h2>สนามถัดไปรอคุณอยู่</h2>
           <p>เข้าสู่ระบบด้วยบัญชีสมาชิกเพื่อสร้างการแข่งขันใหม่ รายการจะถูกบันทึกลงระบบกลาง</p>
-          <button onClick={() => setCreateModalOpen(true)} className="button button-orange">
+          <button onClick={() => requireAuth(() => setCreateModalOpen(true))} className="button button-orange">
             + สร้างทัวร์นาเมนต์แรก <Icon name="arrow" />
           </button>
         </div>
