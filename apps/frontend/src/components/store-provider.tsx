@@ -37,7 +37,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       addToCart(product: Product, size?: ShirtSize) {
         if (product.has_sizes && !size) return;
         const available = size && product.has_sizes
-          ? product.variants.find((variant) => variant.size === size)?.stock ?? 0
+          ? product.variants?.find((variant) => variant.size === size)?.stock ?? product.stock
           : product.stock;
         if (available <= 0) return;
         setCart((items) => {
@@ -60,7 +60,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           items.flatMap((line) => {
             if (line.product.id !== productId || (size && line.size !== size)) return [line];
             const available = line.size && line.product.has_sizes
-              ? line.product.variants.find((variant) => variant.size === line.size)?.stock ?? 0
+              ? line.product.variants?.find((variant) => variant.size === line.size)?.stock ?? line.product.stock
               : line.product.stock;
             const quantity = Math.min(available, line.quantity + amount);
             return quantity > 0 ? [{ ...line, quantity }] : [];

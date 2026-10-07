@@ -8,8 +8,13 @@ import { CLOTHING_SIZES, formatPrice, getProductPrice, type Product, type ShirtS
 export function ProductCard({ product, index }: { product: Product; index: number }) {
   const { cart, addToCart, setCartOpen } = useStore();
   const [selectedSize, setSelectedSize] = useState<ShirtSize | ''>('');
-  const sizeOptions = useMemo(() => CLOTHING_SIZES.filter((size) => product.variants.some((variant) => variant.size === size && variant.stock > 0)), [product.variants]);
-  const selectedVariant = product.variants.find((variant) => variant.size === selectedSize);
+  const variants = product.variants ?? [];
+  const sizeOptions = useMemo(() => {
+    if (!product.has_sizes) return [];
+    if (variants.length === 0) return [...CLOTHING_SIZES];
+    return CLOTHING_SIZES.filter((size) => variants.some((variant) => variant.size === size && variant.stock > 0));
+  }, [product.has_sizes, variants]);
+  const selectedVariant = variants.find((variant) => variant.size === selectedSize);
   const inCart = cart.find((line) => line.product.id === product.id && line.size === (selectedSize || undefined))?.quantity ?? 0;
   const selectedStock = product.has_sizes ? selectedVariant?.stock ?? 0 : product.stock;
   const outOfStock = product.has_sizes ? sizeOptions.length === 0 : product.stock <= 0;

@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
   function editProduct(product: Product) {
     setEditing(product.id);
     setForm({ name: product.name, sku: product.sku, subtitle: product.subtitle ?? '', description: product.description ?? '', category: product.category, price: product.price, image_url: product.image_url ?? '', color: product.color ?? '', stock: product.stock, is_active: product.is_active, has_sizes: product.has_sizes });
-    setSizeStock(Object.fromEntries(sizes.map((size) => [size, product.variants.find((variant) => variant.size === size)?.stock ?? 0])) as Record<ShirtSize, number>);
+    setSizeStock(Object.fromEntries(sizes.map((size) => [size, product.variants?.find((variant) => variant.size === size)?.stock ?? 0])) as Record<ShirtSize, number>);
     setMessage(''); setError('');
   }
 
@@ -90,7 +90,7 @@ export default function AdminDashboardPage() {
       </form>
     </section>
     <section className="dashboard-panel" style={{ marginTop: 20 }}><div className="panel-heading"><div><h2>รายการสินค้า ({products.length})</h2><p>ข้อมูลจากฐานข้อมูลระบบกลาง</p></div><button className="button button-white" onClick={() => void loadProducts()} disabled={loading}>โหลดใหม่</button></div>
-      {loading && products.length === 0 ? <p>กำลังโหลด…</p> : products.length === 0 ? <p>ยังไม่มีสินค้า เพิ่มรายการแรกจากแบบฟอร์มด้านบน</p> : <div className="table-scroll"><table className="dashboard-table"><thead><tr><th>สินค้า / SKU</th><th>หมวด</th><th>ราคา</th><th>สต็อก</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>{products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#777' }}>{product.sku}</small></td><td>{product.category}</td><td>{formatPrice(product.price)}</td><td>{product.has_sizes ? product.variants.map((variant) => `${variant.size}: ${variant.stock}`).join(' · ') : product.stock}</td><td>{product.is_active ? 'แสดง' : 'ซ่อน'}</td><td><div className="dashboard-actions"><button className="button button-white" onClick={() => editProduct(product)}>แก้ไข</button><button className="button button-white text-danger" onClick={() => void removeProduct(product)}>ลบ</button></div></td></tr>)}</tbody></table></div>}
+      {loading && products.length === 0 ? <p>กำลังโหลด…</p> : products.length === 0 ? <p>ยังไม่มีสินค้า เพิ่มรายการแรกจากแบบฟอร์มด้านบน</p> : <div className="table-scroll"><table className="dashboard-table"><thead><tr><th>สินค้า / SKU</th><th>หมวด</th><th>ราคา</th><th>สต็อก</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>{products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#777' }}>{product.sku}</small></td><td>{product.category}</td><td>{formatPrice(product.price)}</td><td>{product.has_sizes ? (product.variants ?? []).map((variant) => `${variant.size}: ${variant.stock}`).join(' · ') : product.stock}</td><td>{product.is_active ? 'แสดง' : 'ซ่อน'}</td><td><div className="dashboard-actions"><button className="button button-white" onClick={() => editProduct(product)}>แก้ไข</button><button className="button button-white text-danger" onClick={() => void removeProduct(product)}>ลบ</button></div></td></tr>)}</tbody></table></div>}
     </section>
   </main>;
 }

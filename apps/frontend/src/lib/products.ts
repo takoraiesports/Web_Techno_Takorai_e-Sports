@@ -30,7 +30,7 @@ export interface Product {
 
 export const getProductPrice = (product: Product, size?: ShirtSize): number => {
   if (!size || !product.has_sizes) return product.price;
-  return product.variants.find((variant) => variant.size === size)?.price ?? product.price;
+  return product.variants?.find((variant) => variant.size === size)?.price ?? product.price;
 };
 
 export const formatPrice = (value: number) => `฿${value.toLocaleString('th-TH')}`;
