@@ -1,0 +1,314 @@
+// ─────────────────────────────────────────────────────────────
+// ENUMS — mirroring PostgreSQL ENUMs
+// ─────────────────────────────────────────────────────────────
+
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  BANNED = 'BANNED',
+}
+
+export enum VerificationStatus {
+  UNVERIFIED = 'UNVERIFIED',
+  PENDING = 'PENDING',
+  VERIFIED = 'VERIFIED',
+  REJECTED = 'REJECTED',
+}
+
+export enum StudentStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  GRADUATED = 'GRADUATED',
+  SUSPENDED = 'SUSPENDED',
+  LEAVE_OF_ABSENCE = 'LEAVE_OF_ABSENCE',
+}
+
+export enum Role {
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+}
+
+export enum Permission {
+  // User management
+  MANAGE_USERS = 'manage_users',
+  MANAGE_ROLES = 'manage_roles',
+
+  // Game management
+  MANAGE_GAMES = 'manage_games',
+
+  // Team management
+  CREATE_TEAM = 'create_team',
+  MANAGE_TEAM = 'manage_team',
+  MANAGE_TEAMS = 'manage_teams',
+  INVITE_MEMBERS = 'invite_members',
+  MANAGE_ROSTER = 'manage_roster',
+
+  // Tournament management
+  CREATE_TOURNAMENT = 'create_tournament',
+  MANAGE_TOURNAMENT = 'manage_tournament',
+  MANAGE_TOURNAMENTS = 'manage_tournaments',
+  MANAGE_REGISTRATION = 'manage_registration',
+  MANAGE_BRACKET = 'manage_bracket',
+  MANAGE_MATCHES = 'manage_matches',
+  VERIFY_RESULTS = 'verify_results',
+
+  // Player actions
+  REGISTER_TOURNAMENT = 'register_tournament',
+  SUBMIT_MATCH_RESULT = 'submit_match_result',
+
+  // Content management
+  MANAGE_NEWS = 'manage_news',
+
+  // Store management
+  MANAGE_PRODUCTS = 'manage_products',
+  MANAGE_ORDERS = 'manage_orders',
+
+  // System management
+  MANAGE_DISCORD = 'manage_discord',
+  MANAGE_MEDIA = 'manage_media',
+  VIEW_AUDIT_LOGS = 'view_audit_logs',
+}
+
+export enum TeamMemberStatus {
+  INVITED = 'INVITED',
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  REMOVED = 'REMOVED',
+}
+
+export enum TeamRole {
+  CAPTAIN = 'CAPTAIN',
+  MAIN_PLAYER = 'MAIN_PLAYER',
+  SUBSTITUTE = 'SUBSTITUTE',
+  COACH = 'COACH',
+  MANAGER = 'MANAGER',
+}
+
+export enum InvitationStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  EXPIRED = 'EXPIRED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum TournamentStatus {
+  DRAFT = 'DRAFT',
+  REGISTRATION_OPEN = 'REGISTRATION_OPEN',
+  REGISTRATION_CLOSED = 'REGISTRATION_CLOSED',
+  CHECK_IN = 'CHECK_IN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum TournamentFormat {
+  SINGLE_ELIMINATION = 'SINGLE_ELIMINATION',
+  DOUBLE_ELIMINATION = 'DOUBLE_ELIMINATION',
+  SWISS = 'SWISS',
+}
+
+export enum RegistrationStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  WITHDRAWN = 'WITHDRAWN',
+  DISQUALIFIED = 'DISQUALIFIED',
+  CHECKED_IN = 'CHECKED_IN',
+}
+
+export enum BracketSide {
+  WINNER = 'WINNER',
+  LOSER = 'LOSER',
+  GRAND_FINAL = 'GRAND_FINAL',
+}
+
+export enum MatchStatus {
+  SCHEDULED = 'SCHEDULED',
+  CHECK_IN = 'CHECK_IN',
+  LIVE = 'LIVE',
+  PENDING_RESULT = 'PENDING_RESULT',
+  COMPLETED = 'COMPLETED',
+  DISPUTED = 'DISPUTED',
+  CANCELLED = 'CANCELLED',
+  FORFEIT = 'FORFEIT',
+}
+
+export enum MatchType {
+  BO1 = 'BO1',
+  BO3 = 'BO3',
+  BO5 = 'BO5',
+  BO7 = 'BO7',
+}
+
+export enum ResultStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  OVERRIDDEN = 'OVERRIDDEN',
+}
+
+export enum DisputeStatus {
+  OPEN = 'OPEN',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  REQUESTING_EVIDENCE = 'REQUESTING_EVIDENCE',
+  RESOLVED = 'RESOLVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum NewsStatus {
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED',
+  SCHEDULED = 'SCHEDULED',
+  ARCHIVED = 'ARCHIVED',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PAID = 'PAID',
+  PROCESSING = 'PROCESSING',
+  READY_FOR_PICKUP = 'READY_FOR_PICKUP',
+  SHIPPED = 'SHIPPED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum PaymentMethod {
+  CREDIT_CARD = 'CREDIT_CARD',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  PROMPTPAY = 'PROMPTPAY',
+  OMISE = 'OMISE',
+  STRIPE = 'STRIPE',
+  MANUAL = 'MANUAL',
+}
+
+export enum DeliveryMethod {
+  PICKUP = 'PICKUP',
+  SHIPPING = 'SHIPPING',
+}
+
+export enum NotificationStatus {
+  UNREAD = 'UNREAD',
+  READ = 'READ',
+}
+
+export enum NotificationChannel {
+  IN_APP = 'IN_APP',
+  EMAIL = 'EMAIL',
+  PUSH = 'PUSH',
+  DISCORD = 'DISCORD',
+}
+
+export enum MediaType {
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  DOCUMENT = 'DOCUMENT',
+  ARCHIVE = 'ARCHIVE',
+}
+
+export enum PlatformType {
+  PC = 'PC',
+  CONSOLE = 'CONSOLE',
+  MOBILE = 'MOBILE',
+  MULTI_PLATFORM = 'MULTI_PLATFORM',
+}
+
+export enum StreamPlatform {
+  TWITCH = 'TWITCH',
+  YOUTUBE = 'YOUTUBE',
+  FACEBOOK_GAMING = 'FACEBOOK_GAMING',
+  OTHER = 'OTHER',
+}
+
+export enum SwissResult {
+  WIN = 'WIN',
+  LOSS = 'LOSS',
+  DRAW = 'DRAW',
+  BYE = 'BYE',
+}
+
+// ─────────────────────────────────────────────────────────────
+// NOTIFICATION TYPES
+// ─────────────────────────────────────────────────────────────
+
+export enum NotificationType {
+  TOURNAMENT_REGISTRATION_APPROVED = 'TOURNAMENT_REGISTRATION_APPROVED',
+  TOURNAMENT_REGISTRATION_REJECTED = 'TOURNAMENT_REGISTRATION_REJECTED',
+  TOURNAMENT_STARTED = 'TOURNAMENT_STARTED',
+  MATCH_REMINDER = 'MATCH_REMINDER',
+  MATCH_SCHEDULE_CHANGED = 'MATCH_SCHEDULE_CHANGED',
+  MATCH_RESULT_APPROVED = 'MATCH_RESULT_APPROVED',
+  MATCH_RESULT_REJECTED = 'MATCH_RESULT_REJECTED',
+  DISPUTE_UPDATE = 'DISPUTE_UPDATE',
+  TEAM_INVITATION = 'TEAM_INVITATION',
+  TEAM_INVITATION_ACCEPTED = 'TEAM_INVITATION_ACCEPTED',
+  ORDER_STATUS_UPDATE = 'ORDER_STATUS_UPDATE',
+  PAYMENT_CONFIRMED = 'PAYMENT_CONFIRMED',
+  NEWS_PUBLISHED = 'NEWS_PUBLISHED',
+  SYSTEM_ANNOUNCEMENT = 'SYSTEM_ANNOUNCEMENT',
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUDIT LOG ACTIONS
+// ─────────────────────────────────────────────────────────────
+
+export enum AuditAction {
+  USER_CREATED = 'USER_CREATED',
+  USER_UPDATED = 'USER_UPDATED',
+  USER_DELETED = 'USER_DELETED',
+  USER_STATUS_CHANGED = 'USER_STATUS_CHANGED',
+  USER_ROLE_CHANGED = 'USER_ROLE_CHANGED',
+  USER_VERIFIED = 'USER_VERIFIED',
+
+  TEAM_CREATED = 'TEAM_CREATED',
+  TEAM_UPDATED = 'TEAM_UPDATED',
+  TEAM_DELETED = 'TEAM_DELETED',
+  TEAM_MEMBER_ADDED = 'TEAM_MEMBER_ADDED',
+  TEAM_MEMBER_REMOVED = 'TEAM_MEMBER_REMOVED',
+  TEAM_MEMBER_ROLE_CHANGED = 'TEAM_MEMBER_ROLE_CHANGED',
+
+  TOURNAMENT_CREATED = 'TOURNAMENT_CREATED',
+  TOURNAMENT_UPDATED = 'TOURNAMENT_UPDATED',
+  TOURNAMENT_STATUS_CHANGED = 'TOURNAMENT_STATUS_CHANGED',
+  TOURNAMENT_CANCELLED = 'TOURNAMENT_CANCELLED',
+
+  REGISTRATION_SUBMITTED = 'REGISTRATION_SUBMITTED',
+  REGISTRATION_APPROVED = 'REGISTRATION_APPROVED',
+  REGISTRATION_REJECTED = 'REGISTRATION_REJECTED',
+  REGISTRATION_WITHDRAWN = 'REGISTRATION_WITHDRAWN',
+
+  BRACKET_GENERATED = 'BRACKET_GENERATED',
+
+  MATCH_RESULT_SUBMITTED = 'MATCH_RESULT_SUBMITTED',
+  MATCH_RESULT_APPROVED = 'MATCH_RESULT_APPROVED',
+  MATCH_RESULT_REJECTED = 'MATCH_RESULT_REJECTED',
+  MATCH_RESULT_OVERRIDDEN = 'MATCH_RESULT_OVERRIDDEN',
+
+  DISPUTE_OPENED = 'DISPUTE_OPENED',
+  DISPUTE_RESOLVED = 'DISPUTE_RESOLVED',
+
+  ORDER_CREATED = 'ORDER_CREATED',
+  ORDER_CANCELLED = 'ORDER_CANCELLED',
+  PAYMENT_CONFIRMED = 'PAYMENT_CONFIRMED',
+  PAYMENT_REFUNDED = 'PAYMENT_REFUNDED',
+
+  NEWS_PUBLISHED = 'NEWS_PUBLISHED',
+  NEWS_ARCHIVED = 'NEWS_ARCHIVED',
+
+  DISCORD_WEBHOOK_CREATED = 'DISCORD_WEBHOOK_CREATED',
+  DISCORD_WEBHOOK_DELETED = 'DISCORD_WEBHOOK_DELETED',
+
+  MEDIA_UPLOADED = 'MEDIA_UPLOADED',
+  MEDIA_DELETED = 'MEDIA_DELETED',
+}
