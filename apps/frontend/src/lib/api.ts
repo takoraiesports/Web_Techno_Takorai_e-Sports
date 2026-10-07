@@ -120,11 +120,7 @@ const mockTeams: Team[] = [
   { id: 'tm3', name: 'Cyber Phoenix', tag: 'CPX', wins: 15, losses: 2, rating: 1510, championships: 3, game: mockGames[0] }
 ];
 
-const mockProducts = [
-  { id: 'p1', name: 'เสื้อชมรม Techno Takorai Pro Jersey 2026', slug: 'techno-takorai-pro-jersey-2026', subtitle: 'เสื้อเเข่งสโมสรเทคโนตะโกราย', description: 'เสื้อเเข่งสโมสรเทคโนตะโกราย เนื้อผ้า Dry-Fit ซับเหงื่อได้ดีเยี่ยม ปักโลโก้ชมรม มีไซส์ S-5XL (2XL ขึ้นไป +50฿)', category: 'Apparel', sku: 'TS-JERSEY-01', price: 450, image_url: '/product/jk01.png', stock: 100, color: 'ส้ม-ดำ', has_sizes: true, is_active: true },
-  { id: 'p2', name: 'เสื้อยืดสโมสร Takorai Casual Tee', slug: 'takorai-casual-tee', subtitle: 'เสื้อยืดลำลอง Cotton 100%', description: 'เสื้อยืดสโมสรผ้านุ่มใส่สบาย มีไซส์ S-5XL (2XL ขึ้นไป +50฿)', category: 'Apparel', sku: 'TS-TEE-01', price: 350, image_url: '/product/k01.png', stock: 150, color: 'ส้ม', has_sizes: true, is_active: true },
-  { id: 'p3', name: 'พวงกุญแจ อะคริลิก Takorai Club', slug: 'takorai-keychain-acrylic', subtitle: 'พวงกุญแจโลโก้สโมสร', description: 'พวงกุญแจอะคริลิกใสด้าน พิมพ์ลาย HD', category: 'Accessories', sku: 'TS-ACC-01', price: 99, image_url: '/product/p01.png', stock: 200, color: 'ส้ม', has_sizes: false, is_active: true }
-];
+const mockProducts: any[] = [];
 
 function getMockFallback<T>(path: string): T {
   if (path.startsWith('/games')) return mockGames as unknown as T;

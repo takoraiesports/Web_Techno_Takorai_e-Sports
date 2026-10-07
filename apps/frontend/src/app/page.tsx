@@ -144,14 +144,8 @@ export default function StorefrontPage() {
             </button>
           )}
 
-          <div className="hero-art-grid" />
-          <div className="hero-art-circle circle-one" />
-          <div className="hero-art-circle circle-two" />
           <div className="art-index">TECHNO / TAKORAI</div>
           <div className="art-vertical">E-SPORTS CLUB</div>
-          <div className="art-monogram">
-            T<span>.</span>
-          </div>
           <div className="art-note">
             <span>PLAY</span>
             <strong>TOGETHER</strong>
